@@ -5,17 +5,21 @@ from .forms import FactureForm
 def liste_factures(request):
     client_id = request.GET.get('client')
     query = request.GET.get('q')
+
     factures = Facture.objects.all()
+
     if client_id:
-        factures = factures.filter(client__id=client_id)
+        factures = factures.par_client(client_id)
     if query:
-        factures = factures.filter(titre__icontains=query)
+        factures = factures.recherche(query)
+
     clients = Client.objects.all()
 
     return render(request, 'factures/liste.html', {
         'factures': factures,
         'clients': clients,
     })
+
 
 def detail_facture(request, pk):
     facture = get_object_or_404(Facture, pk=pk)

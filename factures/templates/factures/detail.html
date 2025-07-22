@@ -1,11 +1,31 @@
-<h1>{{ facture.titre }}</h1>
-<p>Montant HT : {{ facture.montant_ht }} €</p>
-<p>TVA : {{ facture.tva }} %</p>
-<p><strong>Montant TTC : {{ facture.montant_ttc }} €</strong></p>
-<p>Client : {{ facture.client }}</p>
-<p>Catégorie : {{ facture.categorie }}</p>
-<p>Payée ? {% if facture.paye %} ✅ Oui {% else %} ❌ Non {% endif %}</p>
+{% extends 'factures/base.html' %}
+{% block title %}Détail{% endblock %}
 
-<a href="{% url 'modifier_facture' facture.id %}">✏️ Modifier</a> |
-<a href="{% url 'supprimer_facture' facture.id %}">🗑️ Supprimer</a> |
-<a href="{% url 'liste_factures' %}">← Retour</a>
+{% block content %}
+<div class="mt-4">
+  <h2 class="h4">Détail de la facture</h2>
+
+  <ul class="list-group mb-3">
+    <li class="list-group-item"><strong>Titre :</strong> {{ facture.titre }}</li>
+    <li class="list-group-item"><strong>Montant HT :</strong> {{ facture.montant_ht }} €</li>
+    <li class="list-group-item"><strong>TVA :</strong> {{ facture.tva }} %</li>
+    <li class="list-group-item"><strong>Montant TTC :</strong> {{ facture.montant_ttc }} €</li>
+    <li class="list-group-item"><strong>Client :</strong> {{ facture.client }}</li>
+    <li class="list-group-item"><strong>Catégorie :</strong> {{ facture.categorie }}</li>
+    <li class="list-group-item">
+      <strong>Payée :</strong>
+      {% if facture.paye %}
+        Oui
+      {% else %}
+        Non
+      {% endif %}
+    </li>
+  </ul>
+
+  <div class="d-flex gap-2">
+    <a href="{% url 'modifier_facture' facture.id %}" class="btn btn-warning">Modifier</a>
+    <a href="{% url 'supprimer_facture' facture.id %}" class="btn btn-danger">Supprimer</a>
+    <a href="{% url 'liste_factures' %}" class="btn btn-secondary">Retour</a>
+  </div>
+</div>
+{% endblock %}

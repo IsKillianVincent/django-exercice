@@ -13,6 +13,38 @@ class Client(models.Model):
     def __str__(self):
         return self.nom
 
+
+class FactureQuerySet(models.QuerySet):
+    def payees(self):
+        return self.filter(paye=True)
+
+    def impayees(self):
+        return self.filter(paye=False)
+
+    def par_client(self, client_id):
+        return self.filter(client__id=client_id)
+    
+    def recherche(self, terme):
+        return self.filter(titre__icontains=terme)
+
+
+class FactureManager(models.Manager):
+    def get_queryset(self):
+        return FactureQuerySet(self.model, using=self._db)
+
+    def payees(self):
+        return self.get_queryset().payees()
+
+    def impayees(self):
+        return self.get_queryset().impayees()
+
+    def par_client(self, client_id):
+        return self.get_queryset().par_client(client_id)
+    
+    def recherche(self, terme):
+        return self.get_queryset().recherche(terme)
+
+
 class Facture(models.Model):
     titre = models.CharField(max_length=200)
     montant_ht = models.DecimalField(max_digits=10, decimal_places=2)
@@ -21,6 +53,8 @@ class Facture(models.Model):
     paye = models.BooleanField(default=False)
     categorie = models.ForeignKey(Categorie, null=True, blank=True, on_delete=models.SET_NULL)
     client = models.ForeignKey(Client, null=False, blank=False, on_delete=models.CASCADE)
+
+    objects = FactureManager()
 
     @property
     def montant_ttc(self):

@@ -2,107 +2,79 @@
 {% block title %}Factures{% endblock %}
 
 {% block content %}
-<section class="section">
-  <div class="container">
-    
-    <div class="level mb-5">
-      <div class="level-left">
-        <h1 class="title is-4">Factures</h1>
-        <a href="{% url 'creer_facture' %}" class="button is-light ml-3">
-          <span class="icon">+</span>
-        </a>
-      </div>
+<div class="d-flex justify-content-between align-items-center my-4">
+  <h1 class="h3">Liste des factures</h1>
+  <a href="{% url 'creer_facture' %}" class="btn btn-primary">+ Nouvelle facture</a>
+</div>
 
-      <div class="level-right">
-        <form method="get" class="field is-grouped mr-4">
-          <div class="control">
-            <div class="select">
-              <select name="client">
-                <option value="">Tous les clients</option>
-                {% for client in clients %}
-                  <option value="{{ client.id }}" {% if client.id|stringformat:"s" == request.GET.client %}selected{% endif %}>{{ client.nom }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <button class="button is-info" type="submit">Filtrer</button>
-          </div>
-        </form>
-
-        <form method="get" class="field has-addons">
-          <p class="control">
-            <input class="input" type="text" placeholder="Rechercher une facture..." name="q" value="{{ request.GET.q }}">
-          </p>
-          <p class="control">
-            <button class="button is-info">Rechercher</button>
-          </p>
-        </form>
-      </div>
-    </div>
-
-    <div class="box">
-      <table class="table is-fullwidth is-striped is-hoverable">
-        <thead>
-          <tr>
-            <th>#Id</th>
-            <th>Nom</th>
-            <th>Client</th>
-            <th>Montant HT</th>
-            <th>TVA</th>
-            <th>Montant TTC</th>
-            <th>Catégorie</th>
-            <th>Statut</th>
-            <th>Date</th>
-            <th class="has-text-centered">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for f in factures %}
-          <tr>
-            <td><small>#{{ f.id }}</small></td>
-            <td><strong>{{ f.titre }}</strong></td>
-            <td>
-              <div class="is-flex is-align-items-center">
-                <figure class="image is-24x24 mr-2">
-                  <img class="is-rounded" src="https://ui-avatars.com/api/?name={{ f.client.nom|urlencode }}&background=8D5CAB&color=fff">
-                </figure>
-                <span>{{ f.client.nom }}</span>
-              </div>
-            </td>
-            <td>{{ f.montant_ht }} €</td>
-            <td>{{ f.tva }}%</td>
-            <td>{{ f.montant_ttc }} €</td>
-            <td>
-              {% if f.categorie %}
-                <span class="tag is-light">{{ f.categorie.nom }}</span>
-              {% else %}
-                <span class="tag">Non définie</span>
-              {% endif %}
-            </td>
-            <td>
-              {% if f.paye %}
-                <span class="tag is-success is-light">Payée</span>
-              {% else %}
-                <span class="tag is-danger is-light">Impayée</span>
-              {% endif %}
-            </td>
-            <td>{{ f.date_creation }}</td>
-            <td class="has-text-centered">
-              <div class="buttons are-small is-centered">
-                <a href="{% url 'detail_facture' f.id %}" class="button is-info is-light">Voir</a>
-                <a href="{% url 'modifier_facture' f.id %}" class="button is-warning is-light">Modifier</a>
-                <a href="{% url 'supprimer_facture' f.id %}" class="button is-danger is-light">Supprimer</a>
-              </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="8" class="has-text-centered">Aucune facture trouvée.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
+<form method="get" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <select name="client" class="form-select">
+      <option value="">Tous les clients</option>
+      {% for client in clients %}
+        <option value="{{ client.id }}" {% if client.id|stringformat:"s" == request.GET.client %}selected{% endif %}>{{ client.nom }}</option>
+      {% endfor %}
+    </select>
   </div>
-</section>
+  <div class="col-md-6">
+    <input type="text" class="form-control" name="q" placeholder="Rechercher une facture..." value="{{ request.GET.q }}">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-outline-primary w-100">Filtrer</button>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Titre</th>
+        <th>Client</th>
+        <th>HT</th>
+        <th>TVA</th>
+        <th>TTC</th>
+        <th>Catégorie</th>
+        <th>Statut</th>
+        <th>Date</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in factures %}
+      <tr>
+        <td>#{{ f.id }}</td>
+        <td><strong>{{ f.titre }}</strong></td>
+        <td>
+          <div class="d-flex align-items-center">
+            <img src="https://ui-avatars.com/api/?name={{ f.client.nom|urlencode }}&background=0D8ABC&color=fff" class="rounded-circle me-2" width="30" height="30" alt="Avatar">
+            {{ f.client.nom }}
+          </div>
+        </td>
+        <td>{{ f.montant_ht }} €</td>
+        <td>{{ f.tva }}%</td>
+        <td>{{ f.montant_ttc }} €</td>
+        <td>{{ f.categorie.nom|default:"-" }}</td>
+        <td>
+          {% if f.paye %}
+            <span class="badge bg-success">Payée</span>
+          {% else %}
+            <span class="badge bg-danger">Impayée</span>
+          {% endif %}
+        </td>
+        <td>{{ f.date_creation }}</td>
+        <td class="text-center">
+          <a href="{% url 'detail_facture' f.id %}" class="btn btn-sm btn-outline-info">Voir</a>
+          <a href="{% url 'modifier_facture' f.id %}" class="btn btn-sm btn-outline-warning">Modifier</a>
+          <a href="{% url 'supprimer_facture' f.id %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="10" class="text-center text-muted">Aucune facture trouvée.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
