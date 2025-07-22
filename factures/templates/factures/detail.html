@@ -1,0 +1,11 @@
+<h1>{{ facture.titre }}</h1>
+<p>Montant HT : {{ facture.montant_ht }} €</p>
+<p>TVA : {{ facture.tva }} %</p>
+<p><strong>Montant TTC : {{ facture.montant_ttc }} €</strong></p>
+<p>Client : {{ facture.client }}</p>
+<p>Catégorie : {{ facture.categorie }}</p>
+<p>Payée ? {% if facture.paye %} ✅ Oui {% else %} ❌ Non {% endif %}</p>
+
+<a href="{% url 'modifier_facture' facture.id %}">✏️ Modifier</a> |
+<a href="{% url 'supprimer_facture' facture.id %}">🗑️ Supprimer</a> |
+<a href="{% url 'liste_factures' %}">← Retour</a>
